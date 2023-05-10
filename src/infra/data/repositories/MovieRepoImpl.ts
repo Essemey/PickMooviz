@@ -8,6 +8,8 @@ export default class MovieRepoImpl implements MovieRepo {
 
     constructor(_datasource: MovieDataSource) {
         this.dataSource = _datasource;
+        this.getMovies = this.getMovies.bind(this);
+        this.getMovie = this.getMovie.bind(this);
     }
 
     async getMovies(id: string) {

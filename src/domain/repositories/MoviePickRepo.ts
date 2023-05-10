@@ -1,4 +1,4 @@
-import { Movie, MoviePreview } from "../entities/movie-structures";
+import { MoviePreview } from "../entities/movie-structures";
 
 export default interface MoviePickRepo {
     getPickedMovie: (id: string) => Promise<MoviePreview>;

@@ -1,4 +1,5 @@
 import { Movie as DomainMovie } from "../../../../../domain/entities/movie-structures";
+import { isRight, makeLeft, makeRight, unwrapEither } from "../../../../utils/either";
 import request from "../../../../utils/request";
 import MovieDataSource from "../../MovieDataSource";
 import { Movie, MoviesApiRes } from "./entities/movie-omdb-api-structures";
@@ -8,10 +9,10 @@ function formatMovie(obj: any) {
     const newObj: any = {};
     for (const key in obj) {
         key === 'Writer' ?
-            newObj[`${key}s`.toLowerCase()] = obj[key].split(', ')
+            newObj[`${key}s`.toLowerCase()] = obj[key].split(' ')
             :
             key === 'Actors' ?
-                newObj[key.toLowerCase()] = obj[key].split(', ')
+                newObj[key.toLowerCase()] = obj[key].split(' ')
                 :
                 key === 'imdbID' ?
                     newObj['id'] = obj[key]
@@ -30,6 +31,7 @@ function formatMovie(obj: any) {
     return newObj as DomainMovie;
 }
 
+
 export default class MovieOMDbApiDataSourceImpl implements MovieDataSource {
 
     private apiUrl = 'http://www.omdbapi.com/';
@@ -38,22 +40,28 @@ export default class MovieOMDbApiDataSourceImpl implements MovieDataSource {
 
     async searchMovies(search: string) {
 
-        const moviesApiRes = await request<MoviesApiRes>(`${this.apiUrl}?apiKey=${this.apiKey}&s=${search}&type=${this.apiTypeSearched}`);
-        const movies = moviesApiRes.Search.map(movie => ({
-            id: movie.imdbID,
-            title: movie.Title,
-            image: movie.Poster,
-            year: movie.Year
-        }));
+        const moviesApiRes = await request<Error, MoviesApiRes>(`${this.apiUrl}?apiKey=${this.apiKey}&s=${search}&type=${this.apiTypeSearched}`);
 
-        return movies;
+        if (isRight(moviesApiRes)) {
+            const movies = unwrapEither(moviesApiRes).Search.map(movie => ({
+                id: movie.imdbID,
+                title: movie.Title,
+                image: movie.Poster,
+                year: movie.Year
+            }));
+            return makeRight(movies);
+        }
+        return moviesApiRes
     }
 
     async getMovie(id: string) {
 
-        const movieApiRes = await request<Movie>(`${this.apiUrl}?apiKey=${this.apiKey}&i=${id}`);
-        const { imdbVotes, imdbRating, Response, Rated, Website, Metascore, Language, DVD, ...restMovie } = movieApiRes;
+        const movieApiRes = await request<Error, Movie>(`${this.apiUrl}?apiKey=${this.apiKey}&i=${id}`);
 
-        return formatMovie(restMovie);
+        if (isRight(movieApiRes)) {
+            const { imdbVotes, imdbRating, Response, Rated, Website, Metascore, Language, DVD, ...restMovie } = unwrapEither(movieApiRes);
+            return makeRight(formatMovie(restMovie));
+        }
+        return movieApiRes;
     }
 }

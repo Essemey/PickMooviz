@@ -17,13 +17,13 @@ describe("MoviePicker", () => {
   });
   //----------------------------------------------------------------------------
   it(
-    "should add given movie title to picks " +
-      "on MoviePicker.pick " +
-      "when given movie title is not empty " +
-      "and no title already picked for first letter of given movie title",
+    "should add given movie title to puts " +
+    "on MoviePicker.put " +
+    "when given movie title is not empty " +
+    "and no title already puted for first letter of given movie title",
     async () => {
       const title = "Bohemian Rhapsody";
-      await moviePicker.pick(title);
+      await moviePicker.put(title);
 
       const result = await moviePickRepo.getByFirstLetter("B");
       const allPicks = await moviePickRepo.getAll();
@@ -35,34 +35,34 @@ describe("MoviePicker", () => {
   //----------------------------------------------------------------------------
   it(
     "should throw MoviePickAlreadyExistError " +
-      "on MoviePicker.pick " +
-      "when given movie title is not empty " +
-      "and some title already picked for first letter of given movie title",
+    "on MoviePicker.put " +
+    "when given movie title is not empty " +
+    "and some title already puted for first letter of given movie title",
     async () => {
       const title = "Bohemian Rhapsody";
-      await moviePicker.pick(title);
+      await moviePicker.put(title);
 
       await expect(async () => {
-        await moviePicker.pick(title);
+        await moviePicker.put(title);
       }).rejects.toThrow(MoviePickAlreadyExistError);
 
       await expect(async () => {
-        await moviePicker.pick("Barton Fink");
+        await moviePicker.put("Barton Fink");
       }).rejects.toThrow(MoviePickAlreadyExistError);
 
       await expect(async () => {
-        await moviePicker.pick("batman");
+        await moviePicker.put("batman");
       }).rejects.toThrow(MoviePickAlreadyExistError);
     }
   );
   //----------------------------------------------------------------------------
   it(
     "should throw EmptyMovieTitleError " +
-      "on MoviePicker.pick " +
-      "when given movie title is empty",
+    "on MoviePicker.put " +
+    "when given movie title is empty",
     async () => {
       await expect(async () => {
-        await moviePicker.pick("");
+        await moviePicker.put("");
       }).rejects.toThrow(EmptyMovieTitleError);
     }
   );
