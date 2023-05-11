@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Movie, MoviePreview } from "../../../../domain/entities/movie-structures";
-import { getMovie, getMovies } from "../thunks/movieThunks";
+import { getMovie, getMovies, getPickedMovies, savePickedMovie } from "../thunks/movieThunks";
 
 
 interface initialState {
     movies: MoviePreview[];
     currentMovie: Movie | null;
-    picks: MoviePreview[];
+    picks: Movie[];
     isLoading: boolean;
     error: string | null;
 }
@@ -41,7 +41,7 @@ const movieSlice = createSlice({
                 state.error = null;
             })
             /*-----------------------------GET-MOVIE-------------------------------------*/
-            .addCase(getMovie.pending, (state, { payload }) => {
+            .addCase(getMovie.pending, state => {
                 state.isLoading = true;
                 state.error = null;
             }).addCase(getMovie.rejected, (state, { payload }) => {
@@ -50,6 +50,31 @@ const movieSlice = createSlice({
             })
             .addCase(getMovie.fulfilled, (state, { payload }) => {
                 state.currentMovie = payload;
+                state.isLoading = false;
+                state.error = null;
+            })
+            /*-----------------------------GET-PICKED-MOVIES-------------------------------------*/
+            .addCase(getPickedMovies.pending, state => {
+                state.isLoading = true;
+                state.error = null;
+            }).addCase(getPickedMovies.rejected, (state, { payload }) => {
+                state.error = payload || 'An error occurs while getting picks';
+                state.isLoading = false;
+            })
+            .addCase(getPickedMovies.fulfilled, (state, { payload }) => {
+                state.picks = payload;
+                state.isLoading = false;
+                state.error = null;
+            })
+            /*-----------------------------SAVE-PICKED-MOVIE-------------------------------------*/
+            .addCase(savePickedMovie.pending, state => {
+                state.error = null;
+            }).addCase(savePickedMovie.rejected, (state, { payload }) => {
+                state.error = payload || 'An error occurs while saving pick';
+                state.isLoading = false;
+            })
+            .addCase(savePickedMovie.fulfilled, (state, { meta }) => {
+                state.picks.push(meta.arg)
                 state.isLoading = false;
                 state.error = null;
             })

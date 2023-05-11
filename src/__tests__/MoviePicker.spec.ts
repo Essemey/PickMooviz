@@ -1,29 +1,26 @@
-import { MoviePickRepo } from "../MoviePicker/MoviePickRepo";
-import {
-  MoviePicker,
-  MoviePickAlreadyExistError,
-  EmptyMovieTitleError,
-} from "../MoviePicker/MoviePicker";
-import { MemoryMoviePickRepo } from "../MoviePicker/MemoryMoviePickRepo";
+import MoviePickRepo, { EmptyMovieTitleError, MoviePickAlreadyExistError } from "../domain/repositories/MoviePickRepo";
+import MoviePickDataSource from "../infra/data/dataSource/MoviePickDataSource";
+import { MemoryMoviePickRepo } from "../infra/data/dataSource/storage/moviePick/MemoryMoviePickRepo";
+import MoviePickRepoImpl from "../infra/data/repositories/MoviePickRepoImpl";
 
 //------------------------------------------------------------------------------
 describe("MoviePicker", () => {
-  let moviePicker: MoviePicker;
-  let moviePickRepo: MoviePickRepo;
+  let moviePicker: MoviePickRepo;
+  let moviePickRepo: MoviePickDataSource;
 
   beforeEach(async () => {
     moviePickRepo = new MemoryMoviePickRepo();
-    moviePicker = new MoviePicker(moviePickRepo);
+    moviePicker = new MoviePickRepoImpl(moviePickRepo);
   });
   //----------------------------------------------------------------------------
   it(
-    "should add given movie title to puts " +
-    "on MoviePicker.put " +
+    "should add given movie title to picks " +
+    "on MoviePicker.pick " +
     "when given movie title is not empty " +
-    "and no title already puted for first letter of given movie title",
+    "and no title already picked for first letter of given movie title",
     async () => {
       const title = "Bohemian Rhapsody";
-      await moviePicker.put(title);
+      await moviePicker.pick(title);
 
       const result = await moviePickRepo.getByFirstLetter("B");
       const allPicks = await moviePickRepo.getAll();
@@ -35,35 +32,36 @@ describe("MoviePicker", () => {
   //----------------------------------------------------------------------------
   it(
     "should throw MoviePickAlreadyExistError " +
-    "on MoviePicker.put " +
+    "on MoviePicker.pick " +
     "when given movie title is not empty " +
-    "and some title already puted for first letter of given movie title",
+    "and some title already picked for first letter of given movie title",
     async () => {
       const title = "Bohemian Rhapsody";
-      await moviePicker.put(title);
+      await moviePicker.pick(title);
 
       await expect(async () => {
-        await moviePicker.put(title);
+        await moviePicker.pick(title);
       }).rejects.toThrow(MoviePickAlreadyExistError);
 
       await expect(async () => {
-        await moviePicker.put("Barton Fink");
+        await moviePicker.pick("Barton Fink");
       }).rejects.toThrow(MoviePickAlreadyExistError);
 
       await expect(async () => {
-        await moviePicker.put("batman");
+        await moviePicker.pick("batman");
       }).rejects.toThrow(MoviePickAlreadyExistError);
     }
   );
   //----------------------------------------------------------------------------
   it(
     "should throw EmptyMovieTitleError " +
-    "on MoviePicker.put " +
+    "on MoviePicker.pick " +
     "when given movie title is empty",
     async () => {
       await expect(async () => {
-        await moviePicker.put("");
+        await moviePicker.pick("");
       }).rejects.toThrow(EmptyMovieTitleError);
     }
   );
 });
+

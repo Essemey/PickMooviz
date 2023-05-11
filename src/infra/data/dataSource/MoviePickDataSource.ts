@@ -1,9 +1,12 @@
-import { MoviePreview } from "../../../domain/entities/movie-structures";
+import { Movie, MoviePreview } from "../../../domain/entities/movie-structures";
+import { Either } from "../../utils/either";
 
 
-export default interface MoviePickRepo {
-    getPickedMovie: (id: string) => Promise<MoviePreview>;
-    getPickedMovies: () => Promise<MoviePreview[]>;
-    savePickedMovie: (movie: MoviePreview) => Promise<void>;
-    removePickedMovie: (id: string) => Promise<void>;
+export default interface MoviePickDataSource {
+    getByFirstLetter: (firstLetter: string) => Promise<string | null>;
+    getAll: () => Promise<string[]>;
+    put: (title: string) => Promise<void>;
+    getPickedMovies: () => Promise<Either<Error, Movie[]>>;
+    savePickedMovie: (movie: Movie) => Promise<Either<Error, Movie['title']>>;
+    removePickedMovie: (title: string) => Promise<void>;
 }
