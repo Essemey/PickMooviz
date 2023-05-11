@@ -37,7 +37,7 @@ export default function MovieCard({ open, handleClose, movie, isLoading, error, 
     >
         {!isLoading && movie ?
             <div className={styles.modal_content}>
-                <img src={movie.image} />
+                <img src={movie.image} alt={movie.title} />
                 <div className={styles.modal_details}>
                     <header>
                         <h2>{movie.title}</h2>
@@ -50,7 +50,12 @@ export default function MovieCard({ open, handleClose, movie, isLoading, error, 
                             <li><span className={styles.label}>Actors:</span> {movie.actors.map((actor, i) => <span key={i}>{actor}</span>)}</li>
                             <li><span className={styles.label}>Writers:</span> {movie.writers.map((writer, i) => <span key={i}>{writer}</span>)}</li>
                             <li><span className={styles.label}>Director:</span> {movie.director}</li>
+                            <li><span className={styles.label}>Genre:</span> {movie.genre}</li>
                             <li><span className={styles.label}>Duration:</span> {movie.duration}</li>
+                            <li><span className={styles.label}>Country:</span> {movie.country}</li>
+                            <li><span className={styles.label}>Released:</span> {movie.released}</li>
+                            <li><span className={styles.label}>Awards:</span> {movie.awards}</li>
+                            <li><span className={styles.label}>Box Office:</span> {movie.boxOffice}</li>
                         </ul>
                     </div>
                 </div>
