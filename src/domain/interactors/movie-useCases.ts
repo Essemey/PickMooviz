@@ -1,4 +1,4 @@
-import { MoviePreview } from "../entities/movie-structures";
+import { Movie } from "../entities/movie-structures";
 import MoviePickRepo from "../repositories/MoviePickRepo";
 import MovieRepo from "../repositories/MovieRepo";
 
@@ -6,7 +6,7 @@ export const getMovies = async (id: string, task: MovieRepo['getMovies']) => tas
 export const getMovie = async (id: string, task: MovieRepo['getMovie']) => task(id);
 
 export const getPickedMovies = async (task: MoviePickRepo['getPickedMovies']) => task();
-export const savePickedMovie = async (movie: MoviePreview, task: MoviePickRepo['savePickedMovie']) => task(movie);
+export const savePickedMovie = async (movie: Movie, task: MoviePickRepo['savePickedMovie']) => task(movie);
 
 /*export async function pickMovie(movie: {}) {
     await dataSource.Movie.getById()

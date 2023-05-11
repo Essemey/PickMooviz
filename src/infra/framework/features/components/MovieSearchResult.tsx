@@ -34,7 +34,7 @@ export default function MovieSearchResult({ movies, isLoading, search, handleMov
     return <List className={styles.results} sx={{ paddingTop: '0px', paddingBottom: '0px', position: 'absolute' }}>
         {movies?.map(movie =>
             <ListItem key={movie.id} onClick={() => handleMovieDisplaying(movie.id)}>
-                {movie.title}-{movie.id}
+                {movie.title}
             </ListItem>)}
     </List>
 }
